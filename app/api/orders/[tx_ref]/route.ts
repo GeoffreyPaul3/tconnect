@@ -1,20 +1,17 @@
-// pages/api/orders/[tx_ref].ts
-
 import { fetchOrderDetails } from "@/lib/paychangu";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from 'next/server';
 
+export async function GET(request: Request, { params }: { params: { tx_ref: string } }) {
+    const { tx_ref } = params;
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { tx_ref } = req.query;
-
-  try {
-    const orderDetails = await fetchOrderDetails(tx_ref as string);
-    if (!orderDetails) {
-      return res.status(404).json({ message: "Order not found." });
+    try {
+        const orderDetails = await fetchOrderDetails(tx_ref);
+        if (!orderDetails) {
+            return NextResponse.json({ message: "Order not found." }, { status: 404 });
+        }
+        return NextResponse.json(orderDetails, { status: 200 });
+    } catch (error) {
+        console.error("Error fetching order:", error);
+        return NextResponse.json({ message: "Internal server error." }, { status: 500 });
     }
-    res.status(200).json(orderDetails);
-  } catch (error) {
-    console.error("Error fetching order:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
 }
