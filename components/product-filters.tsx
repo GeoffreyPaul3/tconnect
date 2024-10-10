@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useRouter, useSearchParams } from "next/navigation"
-
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useCallback } from "react";
 
 const filters = [
   {
@@ -46,59 +46,80 @@ const filters = [
 export function ProductFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchValues = Array.from(searchParams.entries());
+  
+  // Helper function to get the current filters from URLSearchParams
+  const getSelectedFilters = useCallback((paramId: string) => {
+    const params = searchParams.get(paramId);
+    return params ? params.split(",") : [];
+  }, [searchParams]);
+
+  const handleFilterChange = useCallback(
+    (sectionId: string, optionValue: string, isChecked: boolean) => {
+      const params = new URLSearchParams(searchParams.toString());
+      const currentFilters = getSelectedFilters(sectionId);
+
+      if (isChecked) {
+        // Remove the value from the filter
+        const updatedFilters = currentFilters.filter((value) => value !== optionValue);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        updatedFilters.length > 0
+          ? params.set(sectionId, updatedFilters.join(","))
+          : params.delete(sectionId);
+      } else {
+        // Add the value to the filter
+        params.set(sectionId, [...currentFilters, optionValue].join(","));
+      }
+
+      router.replace(`/?${params.toString()}`);
+    },
+    [searchParams, router, getSelectedFilters]
+  );
 
   return (
-    <form className="sticky top-20">
-      <h3 className="sr-only">Categories</h3>
+    <form className="sticky top-20" onSubmit={(e) => e.preventDefault()}>
+      <h3 className="sr-only">Filters</h3>
 
       {filters.map((section, i) => (
         <Accordion key={i} type="single" collapsible>
           <AccordionItem value={`item-${i}`}>
             <AccordionTrigger>
               <span>
-                {section.name}{" "}
+                {section.name}
                 <span className="ml-1 text-xs font-extrabold uppercase text-gray-400">
-                  {searchParams.get(section.id)
-                    ? `(${searchParams.get(section.id)})`
+                  {getSelectedFilters(section.id).length > 0
+                    ? `(${getSelectedFilters(section.id).join(", ")})`
                     : ""}
                 </span>
               </span>
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
-                {section.options.map((option, optionIdx) => (
-                  <div
-                    key={option.value}
-                    className="flex items-center space-x-2"
-                  >
-                    <Checkbox
-                      id={`filter-${section.id}-${optionIdx}`}
-                      checked={searchValues.some(
-                        ([key, value]) =>
-                          key === section.id && value === option.value
-                      )}
-                      onClick={(event) => {
-                        const params = new URLSearchParams(searchParams);
-                        const checked = event.currentTarget.dataset.state === "checked";
-                        
-                        if (checked) {
-                          params.delete(section.id);
-                        } else {
-                          params.set(section.id, option.value);
-                        }
-                        
-                        router.replace(`/?${params.toString()}`);
-                      }}
-                    />
-                    <label
-                      htmlFor={`filter-${section.id}-${optionIdx}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                {section.options.map((option, optionIdx) => {
+                  const isChecked = getSelectedFilters(section.id).includes(
+                    option.value
+                  );
+
+                  return (
+                    <div
+                      key={option.value}
+                      className="flex items-center space-x-2"
                     >
-                      {option.label}
-                    </label>
-                  </div>
-                ))}
+                      <Checkbox
+                        id={`filter-${section.id}-${optionIdx}`}
+                        checked={isChecked}
+                        onChange={() =>
+                          handleFilterChange(section.id, option.value, isChecked)
+                        }
+                      />
+                      <label
+                        htmlFor={`filter-${section.id}-${optionIdx}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {option.label}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </AccordionContent>
           </AccordionItem>

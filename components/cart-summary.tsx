@@ -10,8 +10,8 @@ export function CartSummary() {
   const { formattedTotalPrice, totalPrice, cartDetails, cartCount } =
     useShoppingCart();
   const [isLoading, setIsLoading] = useState(false);
-  const isDisabled = isLoading || cartCount! === 0;
-  const totalAmount = totalPrice!;
+  const isDisabled = isLoading || cartCount === 0;
+  const totalAmount = totalPrice || 0; // Fallback to 0 if undefined
 
   async function onCheckout() {
     setIsLoading(true);
@@ -22,7 +22,7 @@ export function CartSummary() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(cartDetails),
+        body: JSON.stringify(cartDetails), // Send cart details to the server
       });
 
       if (!response.ok) {
@@ -36,9 +36,11 @@ export function CartSummary() {
         window.location.href = data.url;
       } else {
         console.error("Failed to initiate payment:", data.message);
+        alert("Payment initiation failed. Please try again.");
       }
     } catch (error) {
       console.error("Checkout error:", error);
+      alert("Error during checkout. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +76,7 @@ export function CartSummary() {
       {/* PayChangu Script */}
       <Script
         src="https://in.paychangu.com/js/popup.js"
-        strategy="afterInteractive" 
+        strategy="afterInteractive"
       />
     </section>
   );
