@@ -61,11 +61,6 @@ export const product = defineType({
       type: "string",
     },
     {
-      name: "currency",
-      title: "Currency",
-      type: "string",
-    },
-    {
       name: "price",
       title: "Price",
       type: "number",

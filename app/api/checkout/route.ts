@@ -2,45 +2,47 @@ import { NextRequest, NextResponse } from "next/server";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
 interface CartItem {
-  price: number; // Price is assumed to be in MWK (integer)
+  price: number; // Ensure this is already in MWK (integer)
   quantity: number;
 }
 
-// Function to generate a unique transaction reference
 const generateTxRef = () => `TX-${Math.floor(Math.random() * 1000000000) + 1}`;
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, sessionId } = getAuth(req); // Clerk session data
+    const { userId, sessionId } = getAuth(req);
 
-    // Ensure the user is authenticated
+    // Ensure user is authenticated
     if (!userId || !sessionId) {
-      console.error("Authentication error: User not authenticated");
       return NextResponse.json(
         { message: "User not authenticated" },
         { status: 401 }
       );
     }
 
-    // Fetch the user details using Clerk client
+    // Fetch the full user object using the userId
     const user = await clerkClient.users.getUser(userId);
 
-    // Parse the cart details from the request body
+    // Parse cart details from request body
     const cartDetails: Record<string, CartItem> = await req.json();
+    console.log("Cart Details:", cartDetails);
+
     const tx_ref = generateTxRef();
 
-    // Calculate total amount in MWK
+    // Calculate total amount from cart details in MWK
     const amountInMWK = Object.values(cartDetails).reduce((total, item) => {
-      return total + Math.round(item.price) * item.quantity;
+      const itemTotal = Math.round(item.price) * item.quantity;
+      console.log(`Item: ${item.price} x ${item.quantity} = ${itemTotal}`);
+      return total + itemTotal;
     }, 0);
 
-    // Validate the total amount (now allowing up to 5,000,000 MWK)
+    // Ensure valid amount in MWK (positive and within the allowed range)
     if (amountInMWK <= 0 || amountInMWK > 5000000) {
       console.error(`Invalid amount: ${amountInMWK} MWK`);
       return NextResponse.json({ message: "Invalid amount" }, { status: 400 });
     }
 
-    // Prepare the payment data to send to PayChangu
+    // Prepare payment data for PayChangu API
     const paymentData = {
       amount: amountInMWK,
       currency: "MWK",
@@ -56,12 +58,12 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    // Make the request to PayChangu API
+    // Send the payment request to PayChangu
     const response = await fetch("https://api.paychangu.com/payment", {
       method: "POST",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${process.env.PAYCHANGU_SECRET_KEY}`, // Make sure your key is set properly
+        Authorization: `Bearer ${process.env.PAYCHANGU_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(paymentData),
@@ -69,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
 
-    // Handle response from PayChangu API
+    // Handle PayChangu response
     if (response.ok && data.status === "success") {
       return NextResponse.json({ url: data.data.checkout_url });
     } else {
@@ -80,7 +82,6 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
-    // Catch any errors during the request
     console.error("Error creating PayChangu transaction:", error);
     return NextResponse.json(
       { message: "Server error. Please try again later." },

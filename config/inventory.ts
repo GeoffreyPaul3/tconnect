@@ -36,7 +36,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   },
 
   // Shein Gift Card
@@ -53,7 +53,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   },
 
   // Apple Store Gift Card
@@ -70,7 +70,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   },
 
   // eBay Gift Card
@@ -87,7 +87,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   },
 
   // Etsy Gift Card
@@ -104,7 +104,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   },
 
   // AliExpress Gift Card
@@ -121,7 +121,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   },
 
   // Spotify Gift Card
@@ -138,7 +138,7 @@ export const inventory: InventoryProduct[] = [
     categories: ["gift cards"],
     availability: "in stock",
     validityPeriod: "365 days",
-    currency: "USD",
+    currency: "MWK",
   }
   
   // Additional gift cards can be added following this structure
