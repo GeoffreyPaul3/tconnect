@@ -6,35 +6,30 @@ import { cn } from "@/lib/utils"
 import { ProductFilters } from "@/components/product-filters"
 import { ProductGrid } from "@/components/product-grid"
 import { ProductSort } from "@/components/product-sort"
-import { seedSanityData } from "@/lib/seed"
-
 
 interface Props {
   searchParams: {
     date?: string
     price?: string
-    validityPeriod?: string
+    color?: string
     category?: string
-    availability?: string
+    size?: string
     search?: string
   }
 }
 
 export default async function Page({ searchParams }: Props) {
-
-  await seedSanityData()
-  
-  const { date = "desc", price, validityPeriod, category, availability, search } = searchParams
+  const { date = "desc", price, color, category, size, search } = searchParams
   const priceOrder = price ? `| order(price ${price})` : ""
   const dateOrder = date ? `| order(_createdAt ${date})` : ""
   const order = `${priceOrder}${dateOrder}`
 
   const productFilter = `_type == "product"`
-  const validityFilter = validityPeriod ? `&& "${validityPeriod}" in validityPeriod` : ""
+  const colorFilter = color ? `&& "${color}" in colors` : ""
   const categoryFilter = category ? `&& "${category}" in categories` : ""
-  const availabilityFilter = availability ? `&& "${availability}" in availability` : ""
+  const sizeFilter = size ? `&& "${size}" in sizes` : ""
   const searchFilter = search ? `&& name match "${search}"` : ""
-  const filter = `*[${productFilter}${validityFilter}${categoryFilter}${availabilityFilter}${searchFilter}]`
+  const filter = `*[${productFilter}${colorFilter}${categoryFilter}${sizeFilter}${searchFilter}]`
 
 
   const products = await client.fetch<SanityProduct[]>(
@@ -55,12 +50,12 @@ export default async function Page({ searchParams }: Props) {
   return (
     <div>
       <div className="px-4 pt-20 text-center">
-        <h1 className="text-4xl font-extrabold tracking-normal">
-        Empowering Your Digital Gifting Experience
+      <h1 className="text-4xl font-extrabold tracking-normal">
+          Empowering Your Digital Gifting Experience
         </h1>
         <p className="mx-auto mt-4 max-w-3xl text-base">
-        our one-stop digital gift card marketplace. Explore a wide range of gift cards 
-        and find the perfect one for yourself or a loved one. Fast, easy, and secure.
+          Your one-stop digital gift card marketplace. Explore a wide range of gift cards 
+          and find the perfect one for yourself or a loved one. Fast, easy, and secure.
         </p>
       </div>
       <div>

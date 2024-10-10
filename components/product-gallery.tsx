@@ -1,29 +1,25 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Image from "next/image";
-import { urlForImage } from "@/sanity/lib/image";
-import { SanityProduct } from "@/config/inventory";
-import { shimmer, toBase64 } from "@/lib/image";
+import { useState } from "react"
+import Image from "next/image"
+import { urlForImage } from "@/sanity/lib/image"
+
+import { SanityProduct } from "@/config/inventory"
+import { shimmer, toBase64 } from "@/lib/image"
 
 interface Props {
-  product: SanityProduct | null; // Allow product to be null
+  product: SanityProduct
 }
 
 export function ProductGallery({ product }: Props) {
-  const [selectedImage, setSelectedImage] = useState(0);
-
-  // Ensure product is available and has images
-  if (!product || !product.images || product.images.length === 0) {
-    return <div>No images available</div>; // Handle the case when product is null or has no images
-  }
+  const [selectedImage, setSelectedImage] = useState(0)
 
   return (
     <div className="flex flex-col-reverse">
       {/* Image Grid */}
       <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
         <ul className="grid grid-cols-4 gap-6">
-          {product.images.map((image, index) => (
+          {product?.images?.map((image, index) => (
             <div
               key={image._key as string}
               onClick={() => setSelectedImage(index)}
@@ -42,12 +38,10 @@ export function ProductGallery({ product }: Props) {
                   )}`}
                 />
               </span>
-              {index === selectedImage && (
-                <span
+               {index === selectedImage && <span
                   className="pointer-events-none absolute inset-0 rounded-md ring-4 ring-indigo-500 ring-offset-2"
                   aria-hidden="true"
-                />
-              )}
+                /> }
             </div>
           ))}
         </ul>
@@ -55,21 +49,21 @@ export function ProductGallery({ product }: Props) {
 
       {/* Main Image */}
       <div className="aspect-h-1 aspect-w-1 w-full">
-        {product.images[selectedImage] && (
-          <Image
-            priority
-            src={urlForImage(product.images[selectedImage]).url()}
-            alt={`Main ${product.name} image`}
-            width={600}
-            height={750}
-            className="h-full w-full border-2 border-gray-200 object-cover object-center shadow-sm dark:border-gray-800 sm:rounded-lg"
-            placeholder="blur"
-            blurDataURL={`data:image/svg+xml;base64,${toBase64(
-              shimmer(600, 750)
-            )}`}
-          />
+      {product.images && product.images[selectedImage] && (
+        <Image
+          priority
+          src={urlForImage(product.images[selectedImage]).url()}
+          alt={`Main ${product.name} image`}
+          width={600}
+          height={750}
+          className="h-full w-full border-2 border-gray-200 object-cover object-center shadow-sm dark:border-gray-800 sm:rounded-lg"
+          placeholder="blur"
+          blurDataURL={`data:image/svg+xml;base64,${toBase64(
+            shimmer(600, 750)
+          )}`}
+        />
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { createClient } from "next-sanity";
+import { createClient } from "next-sanity"
 
-import { apiVersion, dataset, projectId, useCdn } from "../env";
+import { apiVersion, dataset, projectId, useCdn } from "../env"
 
 export const client = createClient({
   apiVersion,
@@ -8,5 +8,5 @@ export const client = createClient({
   projectId,
   useCdn,
   token:
-    "skGf4qRGnEeP43UdGloyHTNbp7JjTh6z5klmwlmVbcwRvppsDtpF49a3Vk2NvhMI0AfvCTgJqa09Ak5Gl7GnN8UxFWD4cHyEnJ1oVJlUdjWoRFRd8ziuo4Xio83F6LxtmvYQkdMVP97K4hMZSaKNcpxEyvxno9OoRerOQqsGL0THFpbUgNsk",
-});
+    "skxMceTkLsIpOrmZfDXgr19r3jiHwi72MgJgskqZHL5iIf8ktBViFbPikTZSUlBST5LVDoDLE0nx46STV9XgC2KSANybTIuPvhETAVbt6TaNEmapRLlzU6XaysoRIXGErB3C9Ssh5d0ID5KBuBuEOWKAeKBcDKs87RiRXFvP3T6n65NBDvOK",
+})

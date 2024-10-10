@@ -1,49 +1,32 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { formatCurrencyString, useShoppingCart } from "use-shopping-cart";
 
-import { SanityProduct } from "@/config/inventory"; // Ensure this imports the correct type
-import { getValidityPeriodName } from "@/lib/utils"; 
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
+import { formatCurrencyString, useShoppingCart } from "use-shopping-cart"
+
+import { SanityProduct } from "@/config/inventory"
+
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
 
 interface Props {
-  product: SanityProduct | null; // Allow product to be null
+  product: SanityProduct
 }
 
 export function ProductInfo({ product }: Props) {
-  // Ensure product is not null before trying to access its properties
-  const initialValidityPeriod = product && product.validityPeriod && product.validityPeriod.length > 0 
-    ? product.validityPeriod[0] 
-    : '';
-
-  const [selectedValidityPeriod, setSelectedValidityPeriod] = useState<string>(initialValidityPeriod);
-  const { addItem, incrementItem, cartDetails } = useShoppingCart();
-  const isInCart = product ? !!cartDetails?.[product._id] : false; // Check for product and _id
-
-  const { toast } = useToast();
+  const { addItem, incrementItem, cartDetails } = useShoppingCart()
+  const isInCart = !!cartDetails?.[product._id]
+  const { toast } = useToast()
 
   function addToCart() {
-    if (!product) return; // Prevent adding to cart if product is null
-
     const item = {
       ...product,
-      product_data: {
-        validityPeriod: selectedValidityPeriod,
-      },
-    };
-
-    if (isInCart) {
-      incrementItem(item._id);
-    } else {
-      addItem(item);
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    isInCart ? incrementItem(item._id) : addItem(item)
     toast({
-      title: `${item.name} (${getValidityPeriodName(selectedValidityPeriod)})`,
+      title: `${item.name}`,
       description: "Product added to cart",
       action: (
         <Link href="/cart">
@@ -52,13 +35,8 @@ export function ProductInfo({ product }: Props) {
             <ArrowRight className="h-5 w-5" />
           </Button>
         </Link>
-      ),
-    });
-  }
-
-  // Render nothing or a loading state if product is null
-  if (!product) {
-    return <p>Loading product information...</p>; // Or a spinner/placeholder
+      )
+    })
   }
 
   return (
@@ -80,23 +58,6 @@ export function ProductInfo({ product }: Props) {
         <div className="space-y-6 text-base">{product.description}</div>
       </div>
 
-      <div className="mt-4">
-        <p>
-          Validity Period: <strong>{getValidityPeriodName(selectedValidityPeriod)}</strong>
-        </p>
-        {/* Ensure product.validityPeriod is correctly typed as an array */}
-        {Array.isArray(product.validityPeriod) && product.validityPeriod.map((period: string) => (
-          <Button
-            onClick={() => setSelectedValidityPeriod(period)}
-            key={period}
-            variant={selectedValidityPeriod === period ? "default" : "outline"}
-            className="mr-2 mt-4"
-          >
-            {getValidityPeriodName(period)}
-          </Button>
-        ))}
-      </div>
-
       <form className="mt-6">
         <div className="mt-4 flex">
           <Button
@@ -109,5 +70,5 @@ export function ProductInfo({ product }: Props) {
         </div>
       </form>
     </div>
-  );
+  )
 }

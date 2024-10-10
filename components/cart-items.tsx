@@ -3,30 +3,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { urlForImage } from "@/sanity/lib/image";
-import { Clock, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useShoppingCart } from "use-shopping-cart";
 import { Product } from "use-shopping-cart/core";
 
 import { shimmer, toBase64 } from "@/lib/image";
-import { getValidityPeriodName } from "@/lib/utils"; // Ensure this utility handles validity period correctly
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { CartItemsEmpty } from "@/components/cart-items-empty";
 
-// Update Product type or create a new type that includes validityPeriod
-type ProductWithValidity = Product & {
-  product_data?: {
-    validityPeriod?: string;
-  };
-};
-
 export function CartItems() {
   const { cartDetails, removeItem, setItemQuantity } = useShoppingCart();
-  const cartItems = Object.entries(cartDetails!).map(([, product]) => product as ProductWithValidity); // Type assertion
+  const cartItems = Object.values(cartDetails!); // Fix for unused variable warning
   const { toast } = useToast();
 
-  function removeCartItem(product: ProductWithValidity) {
+  function removeCartItem(product: Product) {
     removeItem(product._id);
     toast({
       title: `${product.name} removed`,
@@ -36,7 +28,6 @@ export function CartItems() {
   }
 
   if (cartItems.length === 0) return <CartItemsEmpty />;
-
   return (
     <ul
       role="list"
@@ -56,6 +47,7 @@ export function CartItems() {
                 className="h-24 w-24 rounded-md border-2 border-gray-200 object-cover object-center dark:border-gray-800 sm:h-48 sm:w-48"
               />
             ) : (
+              // Render a placeholder image if no images are available
               <div className="h-24 w-24 rounded-md border-2 border-gray-200 dark:border-gray-800 sm:h-48 sm:w-48" />
             )}
           </div>
@@ -71,10 +63,7 @@ export function CartItems() {
                   </h3>
                 </div>
                 <p className="mt-1 text-sm font-medium">Price</p>
-                <p className="mt-1 text-sm font-medium">
-                  Validity Period:
-                  <strong>{getValidityPeriodName(product.product_data?.validityPeriod ?? 'N/A')}</strong>
-                </p>
+            
               </div>
 
               <div className="mt-4 sm:mt-0 sm:pr-9">
@@ -104,11 +93,6 @@ export function CartItems() {
                 </div>
               </div>
             </div>
-
-            <p className="mt-4 flex space-x-2 text-sm">
-              <Clock className="h-5 w-5 shrink-0" aria-hidden="true" />
-              <span>Your redeem codes will be sent immediately</span>
-            </p>
           </div>
         </li>
       ))}

@@ -12,6 +12,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 const filters = [
   {
+    id: "categories",
+    name: "Categories",
+    options: [
+      { value: "retail", label: "Retail" },
+      { value: "tech", label: "Tech" },
+      { value: "gaming", label: "Gaming" },
+      { value: "entertainment", label: "Entertainment" },
+      { value: "fashion", label: "Fashion" },
+    ],
+  },
+  {
     id: "availability",
     name: "Availability",
     options: [
@@ -21,31 +32,21 @@ const filters = [
     ],
   },
   {
-    id: "validityPeriod",
-    name: "Validity Period",
-    options: [
-      { value: "1-month", label: "1 Month" },
-      { value: "3-months", label: "3 Months" },
-      { value: "6-months", label: "6 Months" },
-      { value: "1-year", label: "1 Year" },
-    ],
-  },
-  {
     id: "priceRange",
     name: "Price Range",
     options: [
-      { value: "0-10", label: "$0 - $10" },
-      { value: "10-50", label: "$10 - $50" },
-      { value: "50-100", label: "$50 - $100" },
-      { value: "100-500", label: "$100 - $500" },
+      { value: "0-500", label: "$0 - $500" },
+      { value: "501-1000", label: "$501 - $1000" },
+      { value: "1001-2000", label: "$1011 - $2000" },
+      { value: "2001+", label: "$2001 and above" },
     ],
   },
 ];
 
 export function ProductFilters() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const searchValues = Array.from(searchParams.entries())
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchValues = Array.from(searchParams.entries());
 
   return (
     <form className="sticky top-20">
@@ -78,14 +79,16 @@ export function ProductFilters() {
                           key === section.id && value === option.value
                       )}
                       onClick={(event) => {
-                        const params = new URLSearchParams(searchParams)
-                        const checked =
-                          event.currentTarget.dataset.state === "checked"
-                        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                        checked
-                          ? params.delete(section.id)
-                          : params.set(section.id, option.value)
-                        router.replace(`/?${params.toString()}`)
+                        const params = new URLSearchParams(searchParams);
+                        const checked = event.currentTarget.dataset.state === "checked";
+                        
+                        if (checked) {
+                          params.delete(section.id);
+                        } else {
+                          params.set(section.id, option.value);
+                        }
+                        
+                        router.replace(`/?${params.toString()}`);
                       }}
                     />
                     <label
@@ -102,6 +105,5 @@ export function ProductFilters() {
         </Accordion>
       ))}
     </form>
-  )
+  );
 }
-

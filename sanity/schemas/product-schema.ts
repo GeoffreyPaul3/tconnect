@@ -1,4 +1,4 @@
-import { defineField, defineType } from "sanity";
+import { defineField, defineType } from "sanity"
 
 export const product = defineType({
   name: "product",
@@ -71,4 +71,4 @@ export const product = defineType({
       type: "number",
     },
   ],
-});
+})
