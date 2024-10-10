@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { formatCurrencyString, useShoppingCart } from "use-shopping-cart";
 import { Button } from "@/components/ui/button";
-import Script from "next/script"; // Import Next.js Script component
+import Script from "next/script";
 
 export function CartSummary() {
   const { formattedTotalPrice, totalPrice, cartDetails, cartCount } =
