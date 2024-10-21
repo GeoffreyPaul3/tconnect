@@ -19,26 +19,26 @@ export function CartSummary() {
 
   async function onCheckout() {
     setIsLoading(true);
-
+  
     // Generate a unique transaction reference
-    const txRef = '' + Math.floor((Math.random() * 1000000000) + 1);
-
+    const txRef = '' + Math.floor((Math.random() * 10000000) + 1);
+  
     // Prepare payment data
     const paymentData = {
       amount: totalPrice || 0, // Use the total price as the amount, default to 0
       currency: "MWK",
-      email: user?.emailAddresses[0]?.email || "customer@example.com", // Use customer's email or a default value
+      email: user?.emailAddresses[0]?.emailAddress || "customer@example.com", // Corrected email field
       first_name: user?.firstName || "Customer", // Use customer's first name or a default value
       last_name: user?.lastName || "Name", // Use customer's last name or a default value
-      callback_url: "https://yourdomain.com/callback", // Replace with your callback URL
-      return_url: "https://yourdomain.com/return", // Replace with your return URL
+      callback_url: "https://tconnect-pink.vercel.app/callback", // Replace with your callback URL
+      return_url: "https://tconnect-pink.vercel.app/return", // Replace with your return URL
       tx_ref: txRef,
       customization: {
         title: "Order Payment",
         description: "Payment for order details.",
       },
     };
-
+  
     // Make the API call to PayChangu
     const response = await fetch("https://api.paychangu.com/payment", {
       method: "POST",
@@ -49,9 +49,9 @@ export function CartSummary() {
       },
       body: JSON.stringify(paymentData),
     });
-
+  
     const data = await response.json();
-
+  
     // Check if the checkout URL was generated successfully
     if (data.status === "success") {
       // Redirect the user to the PayChangu checkout page
@@ -62,6 +62,7 @@ export function CartSummary() {
     
     setIsLoading(false);
   }
+  
 
   return (
     <section
